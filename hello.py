@@ -1,6 +1,6 @@
-vertices_amount, edges_amount = 0, 0
+vertices_amount, edges_amount, mark = 0, 0, 0
 graph_type = "D"
-vertices_list, edges_list, adjacency_list = [], [], []
+vertices_list, edges_list, adjacency_list, color, d, f = [], [], [], [], [], []
 
 class GraphHasNoDirectionException(Exception):
   pass
@@ -27,13 +27,55 @@ def readFile():
         adjacency_of_vertice.append(edge[1])
     adjacency_list.append([vertice] + adjacency_of_vertice)
 
+def sortList():
+  global adjacency_list
+  adjacency_list.sort(key=lambda x: len(x), reverse=True)
+  adjacency_list_aux = []
+  for child in adjacency_list:
+    adjacency_list_aux.append([child[0]] + sorted(child[1:]))
+  adjacency_list = adjacency_list_aux
+
+def DFS_visit(v):
+  global color, mark, d, f, adjacency_list
+  index = next((i for i, lst in enumerate(adjacency_list) if lst[0] == v), None)
+  color[index] = 'gray'
+  mark = mark + 1
+  d[index] = mark
+  for vertice in adjacency_list[index][1:]:
+    index_aux = next((i for i, lst in enumerate(adjacency_list) if lst[0] == vertice), None)
+    if color[index_aux] == 'white':
+      DFS_visit(vertice)
+  color[index] = 'black'
+  mark = mark + 1
+  f[index] = mark
+
+def DFS(adjacency_list):
+  global color, mark, d, f
+  color = ['white'] * len(adjacency_list)
+  d = [0] * len(adjacency_list)
+  f = [0] * len(adjacency_list)
+  mark = 0
+  for i,v in enumerate(adjacency_list):
+    if color[i] == 'white':
+      DFS_visit(v[0])
+
+def sortResults():
+  global adjacency_list, d, f
+  d = [x for _, x in sorted(zip([list[0] for list in adjacency_list], d))]
+  f = [x for _, x in sorted(zip([list[0] for list in adjacency_list], f))]
+
 if __name__ == '__main__':
   try:
     readFile()
-    print(adjacency_list)
-    print(f"qnt de vértices: {vertices_amount}")
+    sortList()
+    DFS(adjacency_list)
+    sortResults()
+    print(f"qnt de vertices: {vertices_amount}")
     print(f"qnt de arestas: {edges_amount}")
     print(f"Tipo do grafo: {graph_type}")
+    print(f"Lista adjacente:\n{adjacency_list}")
+    print(f"Vetor d: {d}")
+    print(f"Vetor f: {f}")
   except GraphHasNoDirectionException as e:
     print("Erro:", e)
 
