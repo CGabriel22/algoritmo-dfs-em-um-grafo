@@ -44,7 +44,19 @@ def DFS_visit(v):
   for vertice in adjacency_list[index][1:]:
     index_aux = next((i for i, lst in enumerate(adjacency_list) if lst[0] == vertice), None)
     if color[index_aux] == 'white':
+      print(f"{v} {vertice}: Arvore")
       DFS_visit(vertice)
+    else:
+      if d[index] < d[index_aux]:
+        # Aresta de Avanço
+        print(f"{v} {vertice}: Avanco")
+      else:
+        if f[index_aux] == 0:
+          # Aresta de retorno
+          print(f"{v} {vertice}: Retorno")
+        else:
+          # Aresta de Cruzamento
+          print(f"{v} {vertice}: Cruzamento")
   color[index] = 'black'
   mark = mark + 1
   f[index] = mark
@@ -68,13 +80,13 @@ if __name__ == '__main__':
   try:
     readFile()
     sortList()
-    DFS(adjacency_list)
-    sortResults()
     print(f"qnt de vertices: {vertices_amount}")
     print(f"qnt de arestas: {edges_amount}")
-    print(f"Tipo do grafo: {graph_type}")
-    print(f"Lista adjacente:\n{adjacency_list}")
-    print(f"Vetor d: {d}")
+    print(f"Tipo do grafo: {graph_type}\n")
+    print(f"Lista adjacente:\n{adjacency_list}\n")
+    DFS(adjacency_list)
+    sortResults()
+    print(f"\nVetor d: {d}")
     print(f"Vetor f: {f}")
   except GraphHasNoDirectionException as e:
     print("Erro:", e)
